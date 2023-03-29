@@ -8,6 +8,7 @@ using CinemaManager.Movies;
 using CinemaManager.Showtimes;
 using CinemaManager.Tickets;
 using Infrastructure;
+using Infrastructure.Cache;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -36,6 +37,7 @@ namespace ApiApplication
             services.AddTransient<IMoviesReposiroty, MoviesRepository>();
             services.AddTransient<IShowtimeUseCase, ShowtimeUseCases>();
             services.AddTransient<ITicketsUseCase, TicketsUseCases>();
+            services.AddTransient<ICacheService, CacheService>();
 
             services.AddDbContext<CinemaContext>(options =>
             {
@@ -43,7 +45,6 @@ namespace ApiApplication
                     .EnableSensitiveDataLogging()
                     .ConfigureWarnings(b => b.Ignore(InMemoryEventId.TransactionIgnoredWarning));
             });
-            services.AddMemoryCache();
             services.AddControllers(config =>
             {
                 config.Filters.Add(new RequestExcecutionSpeedTracker());

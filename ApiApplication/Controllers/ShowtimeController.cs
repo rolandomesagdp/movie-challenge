@@ -11,7 +11,7 @@ namespace ApiApplication.Controllers
     [ApiController]
     public class ShowtimeController : ControllerBase
     {
-        private IShowtimeUseCase showtimeUseCase;
+        private readonly IShowtimeUseCase showtimeUseCase;
 
         public ShowtimeController(IShowtimeUseCase showtimeUseCase)
         {
@@ -29,7 +29,7 @@ namespace ApiApplication.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex); 
+                return BadRequest(ex.Message); 
             }
         }
     }

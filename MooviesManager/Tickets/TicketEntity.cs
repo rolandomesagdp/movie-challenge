@@ -37,12 +37,12 @@ namespace CinemaManager.Tickets
             {
                 Paid = true;
             }
-            else throw new Exception($"This ticket expired at {CreatedTime.AddMinutes(10).ToLongTimeString()}. You have 10 minutes to pay for reserved tickets.");
+            else throw new Exception($"This ticket reservation expired at {CreatedTime.AddMinutes(10).ToLongTimeString()}. You should reserve a new ticket and pay for it in a time span of 10 minutes.");
         }
 
         public bool CanBeConfirmed()
         { 
-            return CreatedTime >= DateTime.UtcNow.AddMinutes(-2);
+            return CreatedTime <= DateTime.UtcNow.AddMinutes(-1);
         }
 
         private bool SeatsAreAvailable()

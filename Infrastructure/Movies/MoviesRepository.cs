@@ -1,4 +1,5 @@
 ﻿using CinemaManager.Movies;
+using Infrastructure.Cache;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using System;
@@ -13,21 +14,21 @@ namespace CinemaInfrastructure.Movies
 {
     public class MoviesRepository : IMoviesReposiroty
     {
-        private readonly string movieListCackeKey = "movieList";
+        private readonly string movieListCacheKey = "movieList";
         private readonly string _movieApiKey = "68e5fbda-9ec9-4858-97b2-4a8349764c63";
         private readonly string _moviesApiUrl = "http://localhost:7172";
-        private readonly IMemoryCache _cache;
+        private readonly ICacheService _cache;
 
-        public MoviesRepository(IMemoryCache cache)
+        public MoviesRepository(ICacheService cache)
         {
             _cache = cache;
         }
 
-        public async Task<MovieEntity> GetByIdAsync(string id, CancellationToken cancel)
+        public async Task<MovieEntity> GetByIdAsync(string id)
         {
             try
             {
-                var availableMovies = await GetAllMovies(cancel);
+                var availableMovies = await GetAllMovies();
                 var requestedMovie = availableMovies.FirstOrDefault(x => x.Id == id);
 
                 return ConvertToMovieEntity(requestedMovie);
@@ -39,7 +40,7 @@ namespace CinemaInfrastructure.Movies
             }
         }
 
-        private async Task<List<MovieDto>> GetAllMovies(CancellationToken cancel)
+        private async Task<List<MovieDto>> GetAllMovies()
         {
             try
             {
@@ -55,7 +56,7 @@ namespace CinemaInfrastructure.Movies
                         {
                             var moviesAsJsonString = await response.Content.ReadAsStringAsync();
                             var availableMovies = JsonConvert.DeserializeObject<List<MovieDto>>(moviesAsJsonString);
-                            StoreMoviesInCache(availableMovies);
+                            CacheMovies(availableMovies);
                             return availableMovies;
                         }
                     }
@@ -82,22 +83,18 @@ namespace CinemaInfrastructure.Movies
             return null;
         }
 
-        private void StoreMoviesInCache(List<MovieDto> availableMovies)
+        private void CacheMovies(List<MovieDto> availableMovies)
         {
-            var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromHours(2))
-                    .SetAbsoluteExpiration(TimeSpan.FromHours(24))
-                    .SetPriority(CacheItemPriority.Normal)
-                    .SetSize(1024);
-            _cache.Set(movieListCackeKey, availableMovies, cacheEntryOptions);
+            var expirationTime = DateTimeOffset.Now.AddHours(24);
+            _cache.SetData<List<MovieDto>>(movieListCacheKey, availableMovies, expirationTime);
         }
 
         private List<MovieDto> GetAvailableMoviesFromCache()
         {
-            if (_cache.TryGetValue(movieListCackeKey, out List<MovieDto> availableMovies))
-            {
-                return availableMovies;
-            }
+            var cachedMovies = _cache.GetData<List<MovieDto>>(movieListCacheKey);
+
+            if (cachedMovies != null) return cachedMovies;
+
             throw new Exception("There are no movies available. Please, try again later");
         }
     }

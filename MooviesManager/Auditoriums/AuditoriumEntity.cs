@@ -22,12 +22,12 @@ namespace CinemaManager.Auditoriums
 
         public bool ShowtimeIsValidToAdd(ShowtimeEntity newShowtime)
         {
-            return newShowtime.IsValid() && !ShowtimeHasDateConflict(newShowtime);
+            return newShowtime.IsValid() && !ShowtimeConflict(newShowtime);
         }
 
-        private bool ShowtimeHasDateConflict(ShowtimeEntity newShowtime)
+        public bool ShowtimeConflict(ShowtimeEntity newShowtime)
         {
-            if (Showtimes.Any(x => x.SessionDate == newShowtime.SessionDate))
+            if (Showtimes.Any(x => x.SessionDate >= newShowtime.SessionDate && x.SessionDate <= newShowtime.SessionDate.AddHours(1)))
             {
                 return true;
             }

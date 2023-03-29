@@ -11,7 +11,7 @@ namespace ApiApplication.Controllers
     [ApiController]
     public class TicketsController : ControllerBase
     {
-        private ITicketsUseCase _ticketsUseCase;
+        private readonly ITicketsUseCase _ticketsUseCase;
 
         public TicketsController(ITicketsUseCase ticketsUseCase)
         {
