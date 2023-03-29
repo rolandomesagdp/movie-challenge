@@ -1,5 +1,6 @@
 ﻿using CinemaManager.Showtimes;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +13,6 @@ namespace ApiApplication.Controllers
     public class ShowtimeController : ControllerBase
     {
         private readonly IShowtimeUseCase showtimeUseCase;
-
         public ShowtimeController(IShowtimeUseCase showtimeUseCase)
         {
             this.showtimeUseCase = showtimeUseCase;
@@ -20,7 +20,7 @@ namespace ApiApplication.Controllers
 
         // GET: api/<ShowtimeController>
         [HttpPost]
-        public async Task<IActionResult> Get([FromBody] ShowtimeCreationDto showtimeData, CancellationToken cancel)
+        public async Task<IActionResult> CreateShowtime([FromBody] ShowtimeCreationDto showtimeData, CancellationToken cancel)
         {
             try
             {

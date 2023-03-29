@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace ApiApplication
 {
@@ -47,7 +48,7 @@ namespace ApiApplication
             });
             services.AddControllers(config =>
             {
-                config.Filters.Add(new RequestExcecutionSpeedTracker());
+                config.Filters.Add(new RequestExcecutionSpeedTracker(RequestExcecutionSpeedTrackerLogger()));
             })
                 .AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
@@ -74,6 +75,18 @@ namespace ApiApplication
             });
 
             SampleData.Initialize(app);
-        }      
+        }
+
+        private ILogger<RequestExcecutionSpeedTracker> RequestExcecutionSpeedTrackerLogger()
+        {
+            using var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.SetMinimumLevel(LogLevel.Information);
+                builder.AddConsole();
+                builder.AddEventSourceLogger();
+            });
+            var logger = loggerFactory.CreateLogger<RequestExcecutionSpeedTracker>();
+            return logger;
+        }
     }
 }
