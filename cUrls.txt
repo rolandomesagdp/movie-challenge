@@ -1,0 +1,15 @@
+Please add the cURLs of your tests here:
+
+curl -X POST https://localhost:7629/api/showtime
+	-H 'Content-Type: application/json'
+    -d '{"auditoriumId": 2, "movieId": "ID-test1", "sessionDate": "2023-12-05T00:00:00"}'
+
+
+curl -X POST https://localhost:7629/api/tickets/reserve
+	-H 'Content-Type: application/json'
+    -d '{"showtimeId": 2, "auditoriumId": 2, "row": 3, "seats": [4,5,6]}'
+
+
+curl -X POST https://localhost:7629/api/tickets/confirm
+	-H 'Content-Type: application/json'
+    -d '487d75f6-a728-4f54-b88a-76a8894f8edd'
