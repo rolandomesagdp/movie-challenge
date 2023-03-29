@@ -24,7 +24,6 @@ namespace ApiApplication.Controllers
         {
             try
             {
-                await Task.Delay(10_000, cancel);
                 var createdShowtime = await showtimeUseCase.CreateShowtime(showtimeData, cancel);
                 return Ok(createdShowtime);
             }
