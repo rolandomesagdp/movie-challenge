@@ -9,7 +9,6 @@ namespace Infrastructure.Cache
         static ConnectionHelper()
         {
             lazyConnection = new Lazy<ConnectionMultiplexer>(() => {
-                //return ConnectionMultiplexer.Connect(ConfigurationManager.AppSetting["RedisURL"]);
                 return ConnectionMultiplexer.Connect("127.0.0.1:6379");
             });
         }
